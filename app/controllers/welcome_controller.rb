@@ -13,31 +13,43 @@ class WelcomeController < ApplicationController
   end
 
   def parse
+    display_commment_map = {}
     like_hash = {}
     comment_hash = {}
     common_hash = {}
-    puts common_hash
-    puts like_hash
     i = 0
     j = 1
-    response = HTTParty.get("https://graph.facebook.com/755985781119509/feed/?limit=3000&access_token=CAACEdEose0cBAMppwM6sSdb7Qju8qjfFxHXiVFL0qCIuL2iFOURqqC1Gl3KOMZCAqaCN3NeGbYOyLahIArID65Mg84ZBB80s3HoGgWBWCjnan1oyD0OKKF05QgjP4UbduUyif6b3H8MFxQKoC0dJA2EZBHswN75RcVZCQGXC7XZCyDtHMXDAHFAyFrZBMWxQ4ZD")
+    initUrl = "https://graph.facebook.com/755985781119509/feed?limit=600&access_token=CAACEdEose0cBAMppwM6sSdb7Qju8qjfFxHXiVFL0qCIuL2iFOURqqC1Gl3KOMZCAqaCN3NeGbYOyLahIArID65Mg84ZBB80s3HoGgWBWCjnan1oyD0OKKF05QgjP4UbduUyif6b3H8MFxQKoC0dJA2EZBHswN75RcVZCQGXC7XZCyDtHMXDAHFAyFrZBMWxQ4ZD"
+    initProcess(comment_hash, common_hash, j, like_hash, initUrl)
+    puts "Final Mapppppppppppppppp#################################"
+    display_commment_map =  comment_hash.sort_by {|k,v| v}.reverse.take(2)
+    puts display_commment_map
+    #puts like_hash
+    #puts comment_hash
+    #puts common_hash
+
+  end
+
+  def initProcess(comment_hash, common_hash, j, like_hash, initUrl)
+    puts "In the init............."
+    response = HTTParty.get(initUrl)
     puts "putting response"
     json = JSON.parse(response.body)
-    get_common_map(response, common_hash)
-
     if json['error'] == nil || json['error'] == ''
-      json['data'].each do |d|
-        like_injector(d, j, like_hash)
-        comment_injector(comment_hash, d)
-      end
-      puts "Final Mapppppppppppppppp#################################"
-      puts like_hash
-      puts comment_hash
+      get_common_map(response, common_hash)
+      if json['data'] != []
+        json['data'].each do |d|
+          like_injector(d, j, like_hash)
+          comment_injector(comment_hash, d)
+        end
+        if json['paging']['next']
+          initProcess(comment_hash, common_hash, j, like_hash, json['paging']['next'])
+        end
 
+      end
     else
       puts "dingoooo.."
     end
-
   end
 
   def comment_injector(comment_hash, d)
@@ -53,17 +65,20 @@ class WelcomeController < ApplicationController
   end
 
   def like_injector(d, j, like_hash)
-    d['likes']['data'].each do |x|
-      get_likers(x, 0, like_hash)
-    end
-    d['likes']['paging'].each do |x|
-      j = j+1
-      next if j.even?
-      if x[0] == "next"
-        puts "Outside function" + x[1]
-        likers_page(x[1], like_hash)
+    if d['likes']
+      d['likes']['data'].each do |x|
+        get_likers(x, 0, like_hash)
       end
 
+
+      d['likes']['paging'].each do |x|
+        j = j+1
+        next if j.even?
+        if x[0] == "next"
+          puts "Outside function"
+          likers_page(x[1], like_hash)
+        end
+      end
     end
   end
 
@@ -84,7 +99,6 @@ class WelcomeController < ApplicationController
           end
         end
         if json['paging']['next']
-          puts "In the recursion"
           likers_page(json['paging']['next'], like_hash)
         else
           puts "Out from recursion"
