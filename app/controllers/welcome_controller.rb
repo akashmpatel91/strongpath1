@@ -60,7 +60,7 @@ class WelcomeController < ApplicationController
       like_hash.clear
 
     else
-      puts "dingoooo..."
+      puts "dingoooo.."
     end
 
 
