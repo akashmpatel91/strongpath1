@@ -73,6 +73,7 @@ GEM
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    mysql2 (0.3.16)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -155,6 +156,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   koala (~> 1.10.0rc)
+  mysql2 (~> 0.3.15)
   omniauth-facebook (= 1.4.0)
   pg
   rails (= 4.1.0)

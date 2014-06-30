@@ -37,7 +37,7 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 # mysql2
-#gem 'mysql2', '~>0.3.15'
+gem 'mysql2', '~>0.3.15'
 gem 'omniauth-facebook', '1.4.0'
 gem "koala", "~> 1.10.0rc"
 gem 'httparty'
